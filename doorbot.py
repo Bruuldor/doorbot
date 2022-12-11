@@ -20,7 +20,7 @@ async def on_message(message):
         # Split the message into parts, where the first part is the command and the rest is the event details
         parts = message.content.split(" ")
         # Parse the event date from the third part of the message (e.g. "2022-12-11")
-        event_date = datetime.strptime(parts[2], "%Y-%m-%d")
+        event_date = datetime.strptime(parts[2], "%d-%m-%Y %H:%M")
         # Create the event using the event name (second part of the message) as the key
         # and the event date and an empty list of users as the value
         events[parts[1]] = (event_date, [])

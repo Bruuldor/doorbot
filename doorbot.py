@@ -1,4 +1,6 @@
 import discord
+import asyncio
+
 from datetime import datetime, timedelta
 
 client = discord.Client(intents=discord.Intents.all())

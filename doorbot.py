@@ -65,7 +65,48 @@ async def on_ready():
         # Sleep for 1 minute before checking the events dictionary again
         await asyncio.sleep(60)
                 
-                
+@client.event
+async def on_message(message):
+    # Check if the message is from a user and not from the bot
+    if message.author != client.user:
+        # Check if the message starts with the "!event" command
+        if message.content.startswith("!event"):
+            # Split the message into command and event name
+            command, event_name, *event_date = message.content.split()
+            # Check if the event name is not empty
+            if event_name:
+                # Check if the event date is specified
+                if event_date:
+                    # Parse the event date
+                    event_date = datetime.strptime(" ".join(event_date), "%Y-%m-%d %H:%M")
+                else:
+                    # Set the event date to the current date and time if not specified
+                    event_date = datetime.now()
+
+                # Create a new message with the event information
+                event_message = await message.channel.send(f"Event '{event_name}' on {event_date}")
+                # Add the event to the events dictionary
+                events[event_name] = (event_date, [])
+
+                # Add the reaction to the event message
+                await event_message.add_reaction("\U0001F44D")
+
+                # Check if the message starts with the "!remove" command
+                if message.content.startswith("!remove"):
+                    # Split the message into command and event name
+                    command, event_name = message.content.split()
+                    # Check if the event name is not empty
+                    if event_name:
+                        # Check if the event exists in the events dictionary
+                        if event_name in events:
+                            # Get the event details from the events dictionary
+                            event_date, users = events[event_name]
+
+                            # Remove the event from the events dictionary
+                            events.pop(event_name)
+
+                            # Send a message to confirm that the event was removed
+                            await message.channel.send(f"Event '{event_name}' has been removed.")
             
 # Run the bot using your Discord bot token
 import configparser

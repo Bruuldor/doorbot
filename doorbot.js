@@ -4,6 +4,10 @@ const client = new Client({
      intents: 8,
 });
 
+client.on("ready", () => {
+  console.log("The bot is ready!");
+});
+
 const events = {};
 
 const scheduleEvent = (message, eventDate) => {

@@ -44,8 +44,8 @@ async def on_message(message):
 async def on_ready():
     # Print a message when the bot is ready
     print("Bot is ready!")
-    
-        # Check the events dictionary every minute to see if any events are starting tomorrow
+
+    # Check the events dictionary every minute to see if any events are starting soon
     while True:
         # Get the current date and time
         now = datetime.now()
@@ -54,15 +54,17 @@ async def on_ready():
         for event_name, event_details in events.items():
             # Get the event date and list of users who have signed up for the event
             event_date, users = event_details
-            # Check if the event date is tomorrow
-            if event_date == now + timedelta(days=1):
+            # Check if the event date is within the next hour
+            if event_date > now and event_date < now + timedelta(hours=1):
                 # Send a private message to each user who has signed up for the event
                 for user in users:
-                    await user.send(f"Event '{event_name}' is starting tomorrow on {event_date}")
+                    await user.send(f"Event '{event_name}' is starting soon on {event_date}")
 
         # Sleep for 1 minute before checking the events dictionary again
         await asyncio.sleep(60)
-
+                
+                
+            
 # Run the bot using your Discord bot token
 import configparser
 config = configparser.ConfigParser()

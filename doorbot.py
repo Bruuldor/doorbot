@@ -107,7 +107,21 @@ async def on_message(message):
 
                             # Send a message to confirm that the event was removed
                             await message.channel.send(f"Event '{event_name}' has been removed.")
-            
+                            
+               
+                # Check if the message starts with the "!show" command
+                        elif message.content.startswith("!show"):
+                            # Check if the events dictionary is not empty
+                            if events:
+                                # Iterate over the events in the events dictionary
+                                for event_name, (event_date, event_users, event_description) in events.items():
+                                    # Send a message with the event information
+                                    await message.channel.send(
+                                        f"Event '{event_name}' on {event_date}\n{event_description}"
+                                    )
+                            else:
+                                # Send a message to inform the user that there are no events
+                                await message.channel.send("There are no events.")            
 # Run the bot using your Discord bot token
 import configparser
 config = configparser.ConfigParser()

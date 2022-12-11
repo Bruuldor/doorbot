@@ -9,54 +9,6 @@ client = discord.Client(intents=discord.Intents.all())
 # containing the event date and a list of users who have signed up for the event
 events = {}
 
-# Define the on_message event handler
-@client.event
-async def on_message(message):
-    # Check if the message is from a user and not from the bot
-    if message.author != client.user:
-        # Check if the message starts with the "!event" command
-        if message.content.startswith("!event"):
-            # Split the message into command, event name, and event description
-            command, event_name, *event_description = message.content.split()
-            # Check if the event name is not empty
-            if event_name:
-                # Check if the event date is specified
-                if event_description:
-                    # Parse the event description
-                    event_description = " ".join(event_description)
-
-                    # Check if the event description is not longer than 280 characters
-                    if len(event_description) <= 280:
-                        # Set the event date and time to the current date and time if not specified
-                        event_date = datetime.now()
-
-                        # Check if the event date is in the correct format
-                        try:
-                            # Parse the event date using the datetime.strptime() method
-                            event_date = datetime.strptime(" ".join(event_description), "%Y-%m-%d %H:%M")
-                        except ValueError:
-                            # Send a message to inform the user of the correct date format
-                            await message.channel.send(
-                                "Please provide the event date and time in the following format: YYYY-MM-DD HH:MM"
-                            )
-                            # Return to avoid creating the event
-                            return
-
-                        # Create a new message with the event information
-                        event_message = await message.channel.send(
-                            f"Event '{event_name}' on {event_date}\n{event_description}"
-                        )
-                        # Add the event to the events dictionary
-                        events[event_name] = (event_date, [], event_description)
-
-                        # Add the reaction to the event message
-                        await event_message.add_reaction("\U0001F44D")
-
-                        # Send a private message to the user who created the event
-                        await message.author.send(
-                            f"You have successfully created the event '{event_name}' on {event_date}"
-                        )
-
 @client.event
 async def on_ready():
     # Print a message when the bot is ready

@@ -111,3 +111,9 @@ async def on_message(message):
                             else:
                                 # Send a message if there are no events in the events dictionary
                                 await message.channel.send("There are no events currently.")
+
+# Run the bot using your Discord bot token
+import configparser
+config = configparser.ConfigParser()
+config.read('config.ini')
+client.run(config['discord']['token'])

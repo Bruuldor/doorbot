@@ -1,7 +1,7 @@
 import discord
 from datetime import datetime, timedelta
 
-client = discord.Client()
+client = discord.Client(intents=discord.Intents.all())
 
 # Dictionary to store events, where the key is the event name and the value is a tuple
 # containing the event date and a list of users who have signed up for the event

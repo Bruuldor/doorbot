@@ -1,5 +1,5 @@
 import discord
-from datetime import datetime
+from datetime import datetime, timedelta
 
 client = discord.Client()
 
@@ -39,6 +39,29 @@ async def on_message(message):
                 events[event_name] = (event_date, users)
                 # Send a confirmation message to the user who signed up for the event
                 await message.channel.send(f"{message.author} signed up for '{event_name}' on {event_date}")
+
+@client.event
+async def on_ready():
+    # Print a message when the bot is ready
+    print("Bot is ready!")
+    
+        # Check the events dictionary every minute to see if any events are starting tomorrow
+    while True:
+        # Get the current date and time
+        now = datetime.now()
+
+        # Check each event in the events dictionary
+        for event_name, event_details in events.items():
+            # Get the event date and list of users who have signed up for the event
+            event_date, users = event_details
+            # Check if the event date is tomorrow
+            if event_date == now + timedelta(days=1):
+                # Send a private message to each user who has signed up for the event
+                for user in users:
+                    await user.send(f"Event '{event_name}' is starting tomorrow on {event_date}")
+
+        # Sleep for 1 minute before checking the events dictionary again
+        await asyncio.sleep(60)
 
 # Run the bot using your Discord bot token
 import configparser

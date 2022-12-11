@@ -82,35 +82,35 @@ async def on_message(message):
                         # Update the events dictionary with the new list of users
                         events[reaction.message.id] = (event_date, users)
 
-                # Check if the message starts with the "!remove" command
-                if message.content.startswith("!remove"):
-                    # Split the message into command and event name
-                    command, event_name = message.content.split()
-                    # Check if the event name is not empty
-                    if event_name:
-                        # Check if the event exists in the events dictionary
-                        if event_name in events:
-                            # Get the event details from the events dictionary
-                            event_date, users = events[event_name]
+        # Check if the message starts with the "!remove" command
+        if message.content.startswith("!remove"):
+            # Split the message into command and event name
+            command, event_name = message.content.split()
+            # Check if the event name is not empty
+            if event_name:
+                # Check if the event exists in the events dictionary
+                if event_name in events:
+                    # Get the event details from the events dictionary
+                    event_date, users = events[event_name]
 
-                            # Remove the event from the events dictionary
-                            events.pop(event_name)
+                    # Remove the event from the events dictionary
+                    events.pop(event_name)
 
-                            # Send a message to confirm that the event was removed
-                            await message.channel.send(f"Event '{event_name}' has been removed.")
+                    # Send a message to confirm that the event was removed
+                    await message.channel.send(f"Event '{event_name}' has been removed.")
                             
-               
-                # Check if the message starts with the "!show" command
-                elif message.content.startswith("!show"):
-                    # Check if the events dictionary is not empty
-                    if events:
-                        # Iterate over the events in the events dictionary
-                        for event_name, (event_date, users) in events.items():
-                            # Send a message with the event information
-                            await message.channel.send(f"Event '{event_name}' on {event_date} with {len(users)} signed up")
-                    else:
-                        # Send a message if there are no events in the events dictionary
-                        await message.channel.send("There are no events currently.")
+                
+        # Check if the message starts with the "!show" command
+        elif message.content.startswith("!show"):
+            # Check if the events dictionary is not empty
+            if events:
+                # Iterate over the events in the events dictionary
+                for event_name, (event_date, users) in events.items():
+                    # Send a message with the event information
+                    await message.channel.send(f"Event '{event_name}' on {event_date} with {len(users)} signed up")
+            else:
+                # Send a message if there are no events in the events dictionary
+                await message.channel.send("There are no events currently.")
 
 
 # Run the bot using your Discord bot token

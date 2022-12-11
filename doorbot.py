@@ -78,7 +78,7 @@ async def on_message(message):
                 # Check if the event date is specified
                 if event_date:
                     # Parse the event date
-                    event_date = datetime.strptime(" ".join(event_date), "%Y-%m-%d %H:%M")
+                    event_date = datetime.strptime(" ".join(event_date), "%d-%m-%Y %H:%M")
                 else:
                     # Set the event date to the current date and time if not specified
                     event_date = datetime.now()

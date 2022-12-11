@@ -1,7 +1,7 @@
-const Discord = require('discord.js');
 const moment = require('moment');
-const client = new Discord.Client({
-  intents: Discord.Intents.ALL,
+const { Client, Intents, Message } = require('discord.js')
+const client = new Client({
+     intents: 8,
 });
 
 const events = {};

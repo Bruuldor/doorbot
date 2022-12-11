@@ -41,4 +41,7 @@ async def on_message(message):
                 await message.channel.send(f"{message.author} signed up for '{event_name}' on {event_date}")
 
 # Run the bot using your Discord bot token
-client.run("YOUR_DISCORD_BOT_TOKEN")
+import configparser
+config = configparser.ConfigParser()
+config.read('config.ini')
+client.run(config['discord']['token'])

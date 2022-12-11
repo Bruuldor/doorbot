@@ -1,6 +1,8 @@
 const Discord = require('discord.js');
 const moment = require('moment');
-const client = new Discord.Client();
+const client = new Discord.Client({
+  intents: Discord.Intents.ALL,
+});
 
 const events = {};
 

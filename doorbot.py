@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 client = discord.Client(intents=discord.Intents.all())
 
-# Dictionary to store events, where the key is the event name and the value is a tuple
+# Dictionary to store events, where the key is the message ID and the value is a tuple
 # containing the event date and a list of users who have signed up for the event
 events = {}
 
@@ -32,13 +32,55 @@ async def on_ready():
         # Sleep for 1 minute before checking the events dictionary again
         await asyncio.sleep(60)
                 
-# Create a new message with the event information
+@client.event
+async def on_message(message):
+    # Check if the message is from a user and not from the bot
+    if message.author != client.user:
+        # Check if the message starts with the "!event" command
+        if message.content.startswith("!event"):
+            # Split the message into command and event name
+            command, event_name, *event_date = message.content.split()
+            # Check if the event name is not empty
+            if event_name:
+                # Check if the event date is specified
+                if event_date:
+                    # Parse the event date
+                    event_date = datetime.strptime(" ".join(event_date), "%d-%m-%Y %H:%M")
+                else:
+                    # Set the event date to the current date and time if not specified
+                    event_date = datetime.now()
+
+                # Create a new message with the event information
                 event_message = await message.channel.send(f"Event '{event_name}' on {event_date}")
-                # Add the event to the events dictionary using the message ID as the key
+                # Add the event to the events dictionary
                 events[event_message.id] = (event_date, [])
 
                 # Add the reaction to the event message
                 await event_message.add_reaction("\U0001F44D")
+
+                # Add reaction handling to the event message
+                @client.event
+                async def on_reaction_add(reaction, user):
+                    # Check if the reaction is to an event message and the user is not the bot
+                    if reaction.message.id in events and user != client.user:
+                        # Get the event details from the events dictionary
+                        event_date, users = events[reaction.message.id]
+                        # Add the user to the list of users who have signed up for the event
+                        users.append(user)
+                        # Update the events dictionary with the new list of users
+                        events[reaction.message.id] = (event_date, users)
+
+                # Add reaction handling to the event message
+                @client.event
+                async def on_reaction_remove(reaction, user):
+                    # Check if the reaction is to an event message and the user is not the bot
+                    if reaction.message.id in events and user != client.user:
+                        # Get the event details from the events dictionary
+                        event_date, users = events[reaction.message.id]
+                        # Remove the user from the list of users who have signed up for the event
+                        users.remove(user)
+                        # Update the events dictionary with the new list of users
+                        events[reaction.message.id] = (event_date, users)
 
                 # Check if the message starts with the "!remove" command
                 if message.content.startswith("!remove"):
@@ -56,58 +98,16 @@ async def on_ready():
 
                             # Send a message to confirm that the event was removed
                             await message.channel.send(f"Event '{event_name}' has been removed.")
-
+                            
+               
                 # Check if the message starts with the "!show" command
-                elif message.content.startswith("!show"):
-                    # Check if the events dictionary is not empty
-                    if events:
-                        # Iterate over the events in the events dictionary
-                        for event_name, (event_date, event_users, event_description) in events.items():
-                            # Send a message with the event information
-                            await message.channel.send(f"Event '{event_name}' on {event_date}")
-                    else:
-                        # Send a message to inform the user that there are no events
-                        await message.channel.send("There are no events.")        
-                        
-                        
-@client.event
-async def on_raw_reaction_add(event):
-    # Check if the message ID is in the events dictionary
-    if event.message_id in events:
-        # Get the event details from the events dictionary
-        event_date, users = events[event.message_id]
-
-        # Check if the user who added the reaction is not already in the list of users
-        if event.user_id not in users:
-            # Get the user object from the event object
-            user = event.member
-
-            # Add the user to the list of users who have signed up for the event
-            users.append(user)
-
-            # Send a private message to the user to confirm that they signed up for the event
-            await user.send(f"You have signed up for event '{event_name}' on {event_date}")
-
-@client.event
-async def on_raw_reaction_remove(event):
-    # Check if the message ID is in the events dictionary
-    if event.message_id in events:
-        # Get the event details from the events dictionary
-        event_date, users = events[event.message_id]
-
-        # Check if the user who removed the reaction is in the list of users
-        if event.user_id in users:
-            # Get the user object from the event object
-            user = event.member
-
-            # Remove the user from the list of users who have signed up for the event
-            users.remove(user)
-
-            # Send a private message to the user to confirm that they withdrew from the event
-            await user.send(f"You have withdrawn from event '{event_name}' on {event_date}")
-                        
-# Run the bot using your Discord bot token
-import configparser
-config = configparser.ConfigParser()
-config.read('config.ini')
-client.run(config['discord']['token'])
+                        elif message.content.startswith("!show"):
+                            # Check if the events dictionary is not empty
+                            if events:
+                                # Iterate over the events in the events dictionary
+                                for event_name, (event_date, event_users, event_description) in events.items():
+                                    # Send a message with the event information
+                                    await message.channel.send(f"Event '{event_name}' on {event_date} with {len(event_users)} signed up")
+                            else:
+                                # Send a message if there are no events in the events dictionary
+                                await message.channel.send("There are no events currently.")

@@ -152,8 +152,8 @@ delete events[event.id];
 };
 
 const generateId = () => {
-// Generate a random id using the current timestamp and a random number
-return ${Date.now()}${Math.random()};
+  // Generate a random id using the current timestamp and a random number
+  return `${Date.now()}${Math.random()}`;
 };
 
 const getAllEvents = () => {

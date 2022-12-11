@@ -58,17 +58,23 @@ async def on_message(message):
                 # Add the reaction to the event message
                 await event_message.add_reaction("\U0001F44D")
 
-                # Add reaction handling to the event message
+                # Add an event handler for when a reaction is added to a message
                 @client.event
                 async def on_reaction_add(reaction, user):
                     # Check if the reaction is to an event message and the user is not the bot
-                    if reaction.message.id in events and user != client.user:
-                        # Get the event details from the events dictionary
-                        event_date, users = events[reaction.message.id]
-                        # Add the user to the list of users who have signed up for the event
-                        users.append(user)
-                        # Update the events dictionary with the new list of users
-                        events[reaction.message.id] = (event_date, users)
+                    if reaction.message.author == client.user and user != client.user:
+                        # Get the event name from the message content
+                        event_name = reaction.message.content.split("'")[1]
+                        # Check if the event exists in the events dictionary
+                        if event_name in events:
+                            # Get the event details from the events dictionary
+                            event_date, users = events[event_name]
+                            # Check if the user is not already signed up for the event
+                            if user not in users:
+                                # Add the user to the list of users who have signed up for the event
+                                users.append(user)
+                                # Send a private message to the user to confirm that they have signed up for the event
+                                await user.send(f"You have signed up for event '{event_name}' on {event_date}")
 
                 # Add reaction handling to the event message
                 @client.event
